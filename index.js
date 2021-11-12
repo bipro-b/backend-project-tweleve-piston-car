@@ -26,6 +26,7 @@ async function run() {
         const database = client.db('carShop');
         const carsCollection = database.collection('cars');
         const usersCollection = database.collection('users');
+        const ordersCollection = database.collection('orders');
 
         // Get cars API
 
@@ -34,7 +35,17 @@ async function run() {
             const cars = await cursor.toArray();
             res.send(cars);
         })
-
+        // get order API
+        app.get('/orders', async (req, res) => {
+            let query = {};
+            const email = req.query.email;
+            if (email) {
+                query = { email: email }
+            }
+            const cursor = ordersCollection.find(query);
+            const orders = await cursor.toArray();
+            res.send(orders);
+        });
         // get Admin
         app.get('/users/:email', async (req, res) => {
             const email = req.params.email;
@@ -65,6 +76,14 @@ async function run() {
             res.json(result);
         })
 
+        // post order API
+
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            const result = await ordersCollection.insertOne(order);
+            res.json(result);
+        })
+
         // update
 
         app.put('/users', async (req, res) => {
@@ -87,7 +106,7 @@ async function run() {
             res.json(result)
         })
 
-        // Delete API
+        // Delete car API
 
         app.delete('/cars/:id', async (req, res) => {
             const id = req.params.id;
@@ -96,6 +115,16 @@ async function run() {
             console.log('delete', result)
             res.json(result);
         })
+
+        // delete order API
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await ordersCollection.deleteOne(query);
+            console.log('delete', result)
+            res.json(result);
+        })
+
 
     }
     finally {
