@@ -27,6 +27,7 @@ async function run() {
         const carsCollection = database.collection('cars');
         const usersCollection = database.collection('users');
         const ordersCollection = database.collection('orders');
+        const reviewCollection = database.collection('review');
 
         // Get cars API
 
@@ -46,6 +47,13 @@ async function run() {
             const orders = await cursor.toArray();
             res.send(orders);
         });
+
+        // get review API
+        app.get('/review', async (req, res) => {
+            const cursor = reviewCollection.find({});
+            const review = await cursor.toArray();
+            res.send(review);
+        })
         // get Admin
         app.get('/users/:email', async (req, res) => {
             const email = req.params.email;
@@ -84,6 +92,12 @@ async function run() {
             res.json(result);
         })
 
+        // post review API
+        app.post('/review', async (req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.json(result);
+        })
         // update
 
         app.put('/users', async (req, res) => {
